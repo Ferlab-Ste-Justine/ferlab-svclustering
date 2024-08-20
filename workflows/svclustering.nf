@@ -8,6 +8,8 @@ include { paramsSummaryMap            } from 'plugin/nf-validation'
 include { softwareVersionsToYAML      } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { PREPROCESSING               } from '../modules/local/preprocessing/preprocessing.nf'
 include { SVCLUSTERINGDUP             } from '../modules/local/svclustering/svclusteringdup.nf'
+include { SVCLUSTERINGDEL             } from '../modules/local/svclustering/svclusteringdel.nf'
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -44,6 +46,15 @@ workflow SVCLUSTERING {
         params.fasta_dict,
         )
     ch_versions = ch_versions.mix(SVCLUSTERINGDUP.out.versions)
+
+    SVCLUSTERINGDEL(
+        vcfdel, 
+        ploidy,
+        params.fasta,
+        params.fasta_fai,
+        params.fasta_dict,
+        )
+    ch_versions = ch_versions.mix(SVCLUSTERINGDEL.out.versions)
 
     // Collate and save software versions
     //
