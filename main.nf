@@ -1,9 +1,9 @@
 #!/usr/bin/env nextflow
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ferlab/mypipeline-nfcore
+    ferlab/svclustering-nfcore
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Github : https://github.com/ferlab/mypipeline
+    Github : https://github.com/ferlab/svclustering
 ----------------------------------------------------------------------------------------
 */
 
@@ -15,9 +15,9 @@ nextflow.enable.dsl = 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { MYPIPELINE  } from './workflows/mypipeline'
-include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_mypipeline_pipeline'
-include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_mypipeline_pipeline'
+include { SVCLUSTERING  } from './workflows/svclustering'
+include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_svclustering_pipeline'
+include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_svclustering_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -38,12 +38,12 @@ workflow FERLAB_MYPIPELINE {
     //
     // WORKFLOW: Run pipeline
     //
-    MYPIPELINE (
+    SVCLUSTERING (
         samplesheet
     )
 
     emit:
-    multiqc_report = MYPIPELINE.out.multiqc_report // channel: /path/to/multiqc_report.html
+    multiqc_report = SVCLUSTERING.out.multiqc_report // channel: /path/to/multiqc_report.html
 
 }
 /*

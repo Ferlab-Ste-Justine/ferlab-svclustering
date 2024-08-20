@@ -1,4 +1,4 @@
-# ferlab/mypipeline: Output
+# ferlab/svclustering: Output
 
 ## Introduction
 

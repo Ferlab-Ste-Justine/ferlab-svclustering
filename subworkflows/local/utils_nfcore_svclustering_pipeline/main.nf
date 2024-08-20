@@ -1,5 +1,5 @@
 //
-// Subworkflow with functionality specific to the ferlab/mypipeline pipeline
+// Subworkflow with functionality specific to the ferlab/svclustering pipeline
 //
 
 /*
