@@ -1,81 +1,102 @@
-This minimalist template is meant to loosely follow nf-core guidelines without fully adhering to the open-source policy.
-It was created using nf-core create while skipping a maximum of steps, then by removing the modules and as many non-generic options as possible.
+# Introduction
 
-Note that nf-core lint requires at least one nf-core module to be installed in order to work. If you would like a version of the template that works with lint, check out the [multiqc branch] (https://github.com/FelixAntoineLeSieur/ferlab-svclustering/pull/1).
-
-### Once you have cloned the template, you will need to:
-
-- Replace all instances of "svclustering" with the name of your pipeline, including the filename in the workflow directory.
-- Make sure your input file samplesheet follows the validation described in `assets/schema_input.json`. Right now, it follows the sample sheet requirement from [nf-core/sarek](https://github.com/nf-core/sarek/blob/master/assets/schema_input.json), which you will need to adapt to your own samplesheet (See [here](https://www.notion.so/ferlab/Nf-core-schema-input-and-parsing-Samplesheet-files-29603f232c7f4f018fc337f2d1d16a4c) for help with modifying the schema_input.json and parsing your data).
-- Create the input channel from your samplesheet. The validation of your samplesheet and the creation of the input channel occurs in the `PIPELINE_INITIALISATION` process which is defined in `subworkflows/local/utils_nfcore_svclustering_pipeline/main.nf`
-- Install modules with either:
-
-1. `nf-core module install [moduleName]` (see https://nf-co.re/modules/)
-2. `nf-core create module` and follow the steps
-
-- Make sure to use `include {[process_name]} from [module_path]` where needed (most likely your main workflow).
-- For every parameter used in the module, make sure to include them in nextflow.config.
-- Next, use `nf-core schema build` to incorporate every new parameter to the nextflow_schema.json, along with any description, help info and restriction needed.
-- You should make sure the pipeline can run with `-profile test`, by providing a small set of data on which the pipeline can run. Nf-core provides sets of [test-data you can link to](https://github.com/nf-core/test-datasets)
-- Ideally, use `nf-core lint`. If needed, add the required tests to ignore in .nf-core.yml.
-- Create your own repo and push your pipeline.
-- Modify Changelog, readme, and make sure to path to your repo instead of here.
-
-## Introduction
-
-**ferlab/svclustering** is a bioinformatics pipeline that ...
-
-<!-- TODO nf-core:
-   Complete this sentence with a 2-3 sentence summary of what types of data the pipeline ingests, a brief overview of the
-   major pipeline sections and the types of output it produces. You're giving an overview to someone new
-   to nf-core here, in 15-20 seconds. For an example, see https://github.com/nf-core/rnaseq/blob/master/README.md#introduction
--->
-
-<!-- TODO nf-core: Include a figure that guides the user through the major workflow steps. Many nf-core
-     workflows use the "tube map" design for that. See https://nf-co.re/docs/contributing/design_guidelines#examples for examples.   -->
-<!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->
+**ferlab/svclustering** is a bioinformatics pipeline designed to cluster Copy Number Variants (CNVs), specifically duplications and deletions, across individuals using the SVCluster functionality from GATK. This tool aids in the analysis of structural variations, providing insights into genetic differences at the population level.
 
 ## Usage
 
 > [!NOTE]
-> If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/usage/installation) on how to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/usage/introduction#how-to-run-a-pipeline) with `-profile test` before running the workflow on actual data.
+> If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/usage/installation) to set up Nextflow.
 
-<!-- TODO nf-core: Describe the minimum required steps to execute the pipeline, e.g. how to prepare samplesheets.
-     Explain what rows and columns represent. For instance (please edit as appropriate):
+<!-- TODO
+Before running the workflow on actual data, [test your setup](https://nf-co.re/docs/usage/introduction#how-to-run-a-pipeline) with the `-profile test` command. -->
 
-First, prepare a samplesheet with your input data that looks as follows:
+### Preparing Your Input
 
+Before running the pipeline, you need to prepare a samplesheet that contains the necessary information about your input data. This samplesheet should include the following mandatory columns:
 
-Now, you can run the pipeline using:
+- **sample**: A unique identifier for each sample (e.g., sample name, sample ID).
+- **familyId**: An identifier for the family to which the sample belongs (e.g., trios, duos). If your sample is not associated with a family, use a placeholder (e.g., **F12345**).
+- **vcf**: The full path to the VCF file.
 
-<!-- TODO nf-core: update the following command to include all required parameters for a minimal example -->
+Example samplesheet:
+
+```csv
+sample,familyId,vcf
+28210,F1,samples/28210.cnv.vcf.gz
+28226,F1,samples/28226.cnv.vcf.gz
+28227,F1,samples/28227.cnv.vcf.gz
+28240,F2,samples/28240.cnv.vcf.gz
+28221,F2,samples/28221.cnv.vcf.gz
+28222,F2,samples/28222.cnv.vcf.gz
+```
+
+## Running the Pipeline
+
+To execute the pipeline, use the following command:
 
 ```bash
 nextflow run ferlab/svclustering \
    -profile <docker/singularity/.../institute> \
    --input samplesheet.csv \
-   --outdir <OUTDIR>
+   -c nextflow.config \
+   --outdir <OUTDIR> \
+   <Mandatory Params>
+```
+
+> [!RECOMENDED] Alternatively, you can specify a parameter file and run the pipeline using:
+
+```bash
+nextflow run ferlab/svclustering \
+   -profile <docker/singularity/.../institute> \
+   -c nextflow.config \
+   -params-file nf-params.json
 ```
 
 > [!WARNING]
 > Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_;
 > see [docs](https://nf-co.re/usage/configuration#custom-configuration-files).
 
+## Mandatory Parameters
+
+Here are the mandatory parameters you need to specify with **-params-file** or **CLI**:
+
+    •	input: Path to the samplesheet.csv file.
+    •	outdir: Path to the output directory.
+    •	fasta: Path to the reference genome FASTA file.
+    •	fasta_fai: Path to the reference genome FAI file.
+    •	fasta_dict: Path to the reference genome dictionary file.
+
+Example nf-params.json:
+
+```json
+{
+  "input": "samplesheet.csv",
+  "outdir": "results",
+  "fasta": "refgenomes/hg38/Homo_sapiens_assembly38.fasta",
+  "fasta_fai": "refgenomes/hg38/Homo_sapiens_assembly38.fasta.fai",
+  "fasta_dict": "refgenomes/hg38/Homo_sapiens_assembly38.dict"
+}
+```
+
 ## Credits
 
-ferlab/svclustering was originally written by me.
+ferlab/svclustering was originally written by David Morais.
 
-We thank the following people for their extensive assistance in the development of this pipeline:
+Special thanks to the following individuals for their extensive contributions to the development of this pipeline:
 
-<!-- TODO nf-core: If applicable, make list of people who have also contributed -->
+Felix-Antoine Le Sieur
+
+Alexandre Dione
+
+Damien Geneste
+
+Lysisane Bouchard
 
 ## Contributions and Support
 
 If you would like to contribute to this pipeline, please see the [contributing guidelines](.github/CONTRIBUTING.md).
 
 ## Citations
-
-<!-- TODO nf-core: Add bibliography of tools and data used in your pipeline -->
 
 > **The nf-core framework for community-curated bioinformatics pipelines.**
 >

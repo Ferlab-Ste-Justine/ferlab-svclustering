@@ -37,6 +37,6 @@
                 "exists": true
             }
         },
-        "required": ["familyId","sample"]
+        "required": ["sample","familyId","vcf"]
     }
 }
