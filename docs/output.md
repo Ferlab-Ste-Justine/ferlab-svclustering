@@ -18,10 +18,10 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes d
   - Parameters used by the pipeline run: `params.json`.
 - `outdir/`
   - `preprocessing/`
-    - sample.cnv.mod.vcf : The original vcf with additional annotations
-    - sample.cnv.mod.(DEL/DUP).vcf : The modified version of each VCF, split by DUP and DEL.
+    - ${sample}.cnv.mod.vcf : The original vcf with additional annotations
+    - ${sample}.cnv.mod.(DEL/DUP).vcf : The modified version of each VCF, split by DUP and DEL.
+    - ${sample}.cnv.mod.(DEL/DUP).bed
     - ploidy_table.tsv
-    - sample.cnv.mod.(DEL/DUP).bed
   - `svclusteringdup/`
     - ALL.MAX_CLIQUE_RO80.DUP.vcf : The vcf with CNV DUP cluster for all samples
   - `svclusteringdel/`
