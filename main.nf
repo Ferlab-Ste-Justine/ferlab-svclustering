@@ -15,7 +15,7 @@ nextflow.enable.dsl = 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { SVCLUSTERING  } from './workflows/svclustering'
+include { SVCLUSTERING            } from './workflows/svclustering'
 include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_svclustering_pipeline'
 include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_svclustering_pipeline'
 
@@ -28,7 +28,7 @@ include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_svcl
 //
 // WORKFLOW: Run main analysis pipeline depending on type of input
 //
-workflow FERLAB_MYPIPELINE {
+workflow FERLAB_SVCLUSTERING {
 
     take:
     samplesheet // channel: samplesheet read in from --input
@@ -70,7 +70,7 @@ workflow {
     //
     // WORKFLOW: Run main workflow
     //
-    FERLAB_MYPIPELINE (
+    FERLAB_SVCLUSTERING (
         PIPELINE_INITIALISATION.out.samplesheet
     )
 
