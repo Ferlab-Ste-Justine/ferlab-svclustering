@@ -78,6 +78,21 @@ Example nf-params.json:
 }
 ```
 
+## Optional Parameters
+
+You can customize how the clustering is made by specifying some parameters to GATK SVCluster
+
+```json
+{
+  "clustering_algorithm": "SINGLE_LINKAGE",
+  "overlap": 0.8,
+  "breakpoint_strategy": "MIN_START_MAX_END"
+}
+```
+
+Additionally you can pass extra args to GATK SVCluster by specifying the **task.ext.args** parameter.
+To know how to use the **task.ext.args** refer to the NextFlow documention. To know more about additional SVCluster parameters refer to SVCluster on GATK website.
+
 ## Credits
 
 ferlab/svclustering was originally written by David Morais.

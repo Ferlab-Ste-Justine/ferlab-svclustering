@@ -164,6 +164,37 @@
           "hidden": true
         }
       }
+    },
+    "svclustering": {
+      "title": "SVClustering",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "clusterin_algorithm": {
+          "type": "string",
+          "default": "SINGLE_LINKAGE",
+          "description": "Type (CLUSTER_ALGORITHM)",
+          "enum": ["DEFRAGMENT_CNV", "SINGLE_LINKAGE", "MAX_CLIQUE"]
+        },
+        "overlap": {
+          "type": "number",
+          "default": 0.8,
+          "description": "Depth/Depth interval reciprocal overlap fraction"
+        },
+        "breakpoint_strategy": {
+          "type": "string",
+          "default": "MIN_START_MAX_END",
+          "description": "Strategy to use for choosing a representative value for a breakpoint cluster.",
+          "enum": [
+            "MEDIAN_START_MEDIAN_END",
+            "MIN_START_MAX_END",
+            "MAX_START_MIN_END",
+            "MEAN_START_MEAN_END"
+          ],
+          "help_text": ""
+        }
+      }
     }
   },
   "allOf": [
@@ -178,6 +209,9 @@
     },
     {
       "$ref": "#/definitions/generic_options"
+    },
+    {
+      "$ref": "#/definitions/svclustering"
     }
   ],
   "properties": {
