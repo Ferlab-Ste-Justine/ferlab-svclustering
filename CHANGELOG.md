@@ -17,8 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Samplesheet input method
 - Schema_input.json fields
+- [#1](https://github.com/Ferlab-Ste-Justine/ferlab-svclustering/pull/1) invoke sample_preprocessing.py script throug:x!h binary modules feature
 
 ### `Fixed`
+- [#1](https://github.com/Ferlab-Ste-Justine/ferlab-svclustering/pull/1) fix typo for parameter clustering_algorithm in schema
 
 ### `Dependencies`
 

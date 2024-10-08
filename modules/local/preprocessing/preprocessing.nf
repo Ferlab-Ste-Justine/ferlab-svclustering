@@ -23,11 +23,11 @@ process PREPROCESSING {
     def sample_ids = samples.join(' ')
     def vcf_paths  = vcfs.join(' ')
     """
-    python ${moduleDir}/resources/usr/bin/sample_preprocessing.py --sample_id $sample_ids --path $vcf_paths
+    sample_preprocessing.py --sample_id $sample_ids --path $vcf_paths
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        sample_preprocessing.py: \$(python ${moduleDir}/resources/usr/bin/sample_preprocessing.py --version | sed 's/sample_preprocessing.py version//')
+        sample_preprocessing.py: \$(sample_preprocessing.py --version | sed 's/sample_preprocessing.py version//')
     END_VERSIONS
     
     """
