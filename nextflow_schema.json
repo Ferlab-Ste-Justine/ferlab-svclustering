@@ -171,7 +171,7 @@
       "description": "",
       "default": "",
       "properties": {
-        "clusterin_algorithm": {
+        "clustering_algorithm": {
           "type": "string",
           "default": "SINGLE_LINKAGE",
           "description": "Type (CLUSTER_ALGORITHM)",
