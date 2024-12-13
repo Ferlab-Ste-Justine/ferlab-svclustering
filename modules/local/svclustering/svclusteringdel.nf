@@ -37,4 +37,25 @@ process SVCLUSTERINGDEL {
         gatk4: \$(echo \$(gatk --version 2>&1) | sed 's/^.*(GATK) v//; s/ .*\$//')
     END_VERSIONS
     """
+
+    stub:
+    def dels = vcfdel.join(' ')
+    """
+    # To make this stub realist, we verify that the input file exists
+    for input_file in $dels $fasta $ploidy; do
+        if [ ! -f \$input_file ]; then
+            echo "ERROR: file \$input_file does not exist"
+            exit 1
+        fi
+    done
+    
+    # Create empty output file
+    touch ALL.MAX_CLIQUE_RO80.DEL.vcf.gz
+
+    # Create version file as the main script does
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        gatk4: \$(echo \$(gatk --version 2>&1) | sed 's/^.*(GATK) v//; s/ .*\$//')
+    END_VERSIONS
+    """
 }

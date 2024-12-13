@@ -3,6 +3,15 @@
   "homePage": "https://github.com/ferlab/svclustering",
   "repos": {
     "https://github.com/nf-core/modules.git": {
+      "modules": {
+        "nf-core": {
+          "bcftools/view": {
+            "branch": "master",
+            "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
+            "installed_by": ["modules"]
+          }
+        }
+      },
       "subworkflows": {
         "nf-core": {
           "utils_nextflow_pipeline": {

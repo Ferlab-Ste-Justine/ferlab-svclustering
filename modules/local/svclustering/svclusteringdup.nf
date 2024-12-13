@@ -35,5 +35,26 @@ process SVCLUSTERINGDUP {
     "${task.process}":
         gatk4: \$(echo \$(gatk --version 2>&1) | sed 's/^.*(GATK) v//; s/ .*\$//')
     END_VERSIONS
-   """
+    """
+
+    stub:
+    def dups = vcfdup.join(' ')
+    """
+    # Verify the presence of input files to make the stub realistic
+    for input_file in $dups $fasta $ploidy; do
+        if [ ! -f \$input_file ]; then
+            echo "ERROR: file \$input_file does not exist"
+            exit 1
+        fi
+    done
+    
+    # Create an empty output file
+    touch ALL.MAX_CLIQUE_RO80.DUP.vcf.gz
+
+    # Create version file as the main script:
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        gatk4: \$(echo \$(gatk --version 2>&1) | sed 's/^.*(GATK) v//; s/ .*\$//')
+    END_VERSIONS
+    """
 }

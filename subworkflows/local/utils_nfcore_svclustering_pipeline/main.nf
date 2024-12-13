@@ -77,11 +77,6 @@ workflow PIPELINE_INITIALISATION {
     // Create channel from input file provided through params.input
     Channel
     .fromSamplesheet("input")
-    .map { meta, vcf ->
-        def fnum = 1
-        [fnum, [meta.familyId] + meta.sample, meta.sample, vcf]
-    }
-    .groupTuple()  // Group by familyId
     // .view()
     .set { ch_samplesheet }
   

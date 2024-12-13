@@ -3,6 +3,12 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [Unreleased]
+
+### `Changed`
+- [#2](https://github.com/Ferlab-Ste-Justine/ferlab-svclustering/pull/2) by default, only includes variants with FILTER column value of PASS.
+
 ## [v1.1] - 2024-08-21
 
 ### `Added`
@@ -17,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Samplesheet input method
 - Schema_input.json fields
-- [#1](https://github.com/Ferlab-Ste-Justine/ferlab-svclustering/pull/1) invoke sample_preprocessing.py script throug:x!h binary modules feature
+- [#1](https://github.com/Ferlab-Ste-Justine/ferlab-svclustering/pull/1) invoke sample_preprocessing.py script through binary modules feature
 
 ### `Fixed`
 - [#1](https://github.com/Ferlab-Ste-Justine/ferlab-svclustering/pull/1) fix typo for parameter clustering_algorithm in schema
