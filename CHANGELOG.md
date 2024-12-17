@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [v1.2] - 2024-12-17
+
 ### `Changed`
 - [#2](https://github.com/Ferlab-Ste-Justine/ferlab-svclustering/pull/2) by default, only includes variants with FILTER column value of PASS.
 
