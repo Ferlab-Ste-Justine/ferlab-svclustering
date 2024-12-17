@@ -31,5 +31,34 @@ process PREPROCESSING {
     END_VERSIONS
     
     """
-    
+
+    stub:
+    def sample_ids = samples.join(' ')
+    def vcf_paths  = vcfs.join(' ') 
+    """
+    # To make this stub realist, we verify that the input vcf paths exists
+    for vcf_path in $vcf_paths; do
+        if [ ! -f \$vcf_path ]; then
+            echo "ERROR: VCF file \$vcf_path does not exist"
+            exit 1
+        fi
+    done
+
+    # Create empty output files
+    for sample_id in $sample_ids; do
+        touch \${sample_id}.cnv.mod.DEL.bed
+        touch \${sample_id}.cnv.mod.DEL.vcf
+        touch \${sample_id}.cnv.mod.DUP.bed
+        touch \${sample_id}.cnv.mod.DUP.vcf
+        touch \${sample_id}.cnv.mod.vcf
+    done
+    touch ploidy-table.tsv
+
+    # Create version file as the main script does
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        sample_preprocessing.py: stub
+    END_VERSIONS
+    """
+
 }

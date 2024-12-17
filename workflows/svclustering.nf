@@ -9,12 +9,33 @@ include { softwareVersionsToYAML      } from '../subworkflows/nf-core/utils_nfco
 include { PREPROCESSING               } from '../modules/local/preprocessing/preprocessing.nf'
 include { SVCLUSTERINGDUP             } from '../modules/local/svclustering/svclusteringdup.nf'
 include { SVCLUSTERINGDEL             } from '../modules/local/svclustering/svclusteringdel.nf'
-
+include { BCFTOOLS_VIEW  as FILTER    } from '../modules/nf-core/bcftools/view/main.nf'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
+
+def groupSamples(input_ch){
+    return input_ch.map { meta, vcf ->
+        def fnum = 1
+        [fnum, [meta.familyId] + meta.sample, meta.sample, vcf]
+    }
+    .groupTuple()  // Group by familyId
+}
+
+def filterVariants(input_channel, include_only_pass_variants) {
+    if (!include_only_pass_variants) {
+        return input_channel
+    }
+    ch_filter_input =  input_channel.map{ meta, vcf -> 
+        def tbi = file(vcf + ".tbi")
+        tbi.exists() ?
+        [meta, vcf, tbi] :
+        [meta, vcf, []]
+    }
+    return FILTER(ch_filter_input, [], [], []).vcf
+}
 
 workflow SVCLUSTERING {
 
@@ -29,7 +50,11 @@ workflow SVCLUSTERING {
     //
     // MODULE: Run your modules
     //
-    PREPROCESSING(ch_samplesheet)
+
+    ch_filter_variants_output = filterVariants(ch_samplesheet, params.include_only_pass_variants)
+
+    ch_preprocessing_input = groupSamples(ch_filter_variants_output)
+    PREPROCESSING(ch_preprocessing_input)
     vcfdel = PREPROCESSING.out.vcfdel
     vcfdup = PREPROCESSING.out.vcfdup
     beddel = PREPROCESSING.out.beddel

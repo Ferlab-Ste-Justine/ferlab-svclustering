@@ -93,6 +93,8 @@ You can customize how the clustering is made by specifying some parameters to GA
 Additionally you can pass extra args to GATK SVCluster by specifying the **task.ext.args** parameter.
 To know how to use the **task.ext.args** refer to the NextFlow documention. To know more about additional SVCluster parameters refer to SVCluster on GATK website.
 
+By default, only the variants with a FILTER column value of `PASS` are considered; others are ignored. You can disable this behavior by setting the `include_only_pass_variants` parameter to `false`.
+
 ## Credits
 
 ferlab/svclustering was originally written by David Morais.
@@ -105,7 +107,7 @@ Alexandre Dione
 
 Damien Geneste
 
-Lysisane Bouchard
+Lysiane Bouchard
 
 ## Contributions and Support
 
