@@ -66,18 +66,18 @@ workflow SVCLUSTERING {
     SVCLUSTERINGDUP(
         vcfdup, 
         ploidy,
-        params.fasta,
-        params.fasta_fai,
-        params.fasta_dict,
+        file(params.fasta),
+        file(params.fasta_fai),
+        file(params.fasta_dict),
         )
     ch_versions = ch_versions.mix(SVCLUSTERINGDUP.out.versions)
 
     SVCLUSTERINGDEL(
         vcfdel, 
         ploidy,
-        params.fasta,
-        params.fasta_fai,
-        params.fasta_dict,
+        file(params.fasta),
+        file(params.fasta_fai),
+        file(params.fasta_dict),
         )
     ch_versions = ch_versions.mix(SVCLUSTERINGDEL.out.versions)
 
