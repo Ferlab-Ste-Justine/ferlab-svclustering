@@ -95,6 +95,8 @@ To know how to use the **task.ext.args** refer to the NextFlow documention. To k
 
 By default, only the variants with a FILTER column value of `PASS` are considered; others are ignored. You can disable this behavior by setting the `include_only_pass_variants` parameter to `false`.
 
+This filtering step will be performed at the beginning of the workflow. To minimize overhead from creating/destroying resources for each process execution (e.g., creating a pod for the Kubernetes executor), we batch files within a single process execution. By default, each filter process handles 10 files (or fewer if fewer than 10 files remain). To adjust the number of files handled per filter process, you can use the `filter_batch_size`. Note that files within a process are handled sequentially.
+
 ## Credits
 
 ferlab/svclustering was originally written by David Morais.

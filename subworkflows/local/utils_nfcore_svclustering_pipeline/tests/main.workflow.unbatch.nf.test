@@ -1,0 +1,82 @@
+nextflow_workflow {
+
+    name "Test Workflow UTILS_NFCORE_SVCLUSTERING_PIPELINE UNBATCH"
+    script "subworkflows/local/utils_nfcore_svclustering_pipeline/main.nf"
+
+    workflow "UNBATCH"
+    tag 'local'
+ 
+    test("all ok") {
+
+        when {
+
+            workflow {
+                """
+                meta1 = [sample: "s1", prefix: "sample_s1.test"]
+                meta2 = [sample: "s2", prefix: "sample_s2.test"]
+                meta3 = [sample: "s3", prefix: "sample_s3.test"]
+                meta4 = [sample: "s4", prefix: "sample_s4.test"]
+                files_batch1 = [
+                    file("/bar/foo/sample_s1.test.vcf.gz"), 
+                    file("/bar/foo/sample_s2.test.vcf.gz")
+                ]
+                files_batch2 = [
+                    file("/bar/foo/sample_s3.test.vcf.gz"), 
+                    file("/bar/foo/sample_s4.test.vcf.gz"), 
+                    file("/bar/foo/sample_s3.test.vcf.gz.tbi"), 
+                    file("/bar/foo/sample_s4.test.vcf.gz.tbi")
+                ]
+                meta_batch1 = [meta1, meta2]
+                meta_batch2 = [meta3, meta4]
+
+                input[0] = Channel.of([meta_batch1, files_batch1], [meta_batch2, files_batch2])
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert workflow.out.output.size() == 4},
+                { assert workflow.out.output.get(0) == [[sample: "s1"], "/bar/foo/sample_s1.test.vcf.gz"] },
+                { assert workflow.out.output.get(1) == [[sample: "s2"], "/bar/foo/sample_s2.test.vcf.gz"] },
+                { assert workflow.out.output.get(2) == [[sample: "s3"], ["/bar/foo/sample_s3.test.vcf.gz", "/bar/foo/sample_s3.test.vcf.gz.tbi"]] },
+                { assert workflow.out.output.get(3) == [[sample: "s4"], ["/bar/foo/sample_s4.test.vcf.gz", "/bar/foo/sample_s4.test.vcf.gz.tbi"]] }
+            )
+        }
+    }
+
+
+    test("with single file"){
+        when {
+
+            workflow {
+                """
+                meta1 = [sample: "s1", prefix: "sample_s1.test"]
+                meta2 = [sample: "s2", prefix: "sample_s2.test"]
+                meta3 = [sample: "s3", prefix: "sample_s3.test"]
+                files_batch1 = [
+                    file("/bar/foo/sample_s1.test.vcf.gz"), 
+                    file("/bar/foo/sample_s2.test.vcf.gz")
+                ]
+                single_file_batch2 = file("/bar/foo/sample_s3.test.vcf.gz")
+                meta_batch1 = [meta1, meta2]
+                meta_batch2 = [meta3]
+
+                input[0] = Channel.of([meta_batch1, files_batch1], [meta_batch2, single_file_batch2])
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert workflow.out.output.size() == 3},
+                { assert workflow.out.output.get(0) == [[sample: "s1"], "/bar/foo/sample_s1.test.vcf.gz"] },
+                { assert workflow.out.output.get(1) == [[sample: "s2"], "/bar/foo/sample_s2.test.vcf.gz"] },
+                { assert workflow.out.output.get(2) == [[sample: "s3"], "/bar/foo/sample_s3.test.vcf.gz"] },
+            )
+        }
+
+    }
+}

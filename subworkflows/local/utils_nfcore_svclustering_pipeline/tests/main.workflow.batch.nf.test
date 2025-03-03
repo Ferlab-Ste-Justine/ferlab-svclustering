@@ -1,0 +1,47 @@
+nextflow_workflow {  
+    name "Test Workflow UTILS_NFCORE_SVCLUSTERING_PIPELINE BATCH"
+    script "subworkflows/local/utils_nfcore_svclustering_pipeline/main.nf"
+
+    workflow "BATCH"
+    tag 'local'
+
+    
+    test("All ok") {
+
+        when {
+
+            workflow {
+                """
+                meta1 = [sample: "s1"]
+                expected_size = 3
+                tag = "test"
+                input[0] = Channel.of(
+                    [[sample: "s1"], "file1.vcf.gz", "file1.vcf.gz.tbi"], 
+                    [[sample: "s2"], "file2.vcf.gz", "file2.vcf.gz.tbi"], 
+                    [[sample: "s3"], "file3.vcf.gz", "file3.vcf.gz.tbi"],
+                    [[sample: "s4"], "file4.vcf.gz", "file4.vcf.gz.tbi"]
+                )
+                input[1] = expected_size
+                input[2] = tag
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert workflow.out.output.size() == 2},
+                { assert workflow.out.output.get(0) == [
+                    [[sample: "s1", prefix: "sample_s1.test"], [sample: "s2", prefix: "sample_s2.test"], [sample: "s3", prefix: "sample_s3.test"]], 
+                    ["file1.vcf.gz", "file2.vcf.gz", "file3.vcf.gz"], 
+                    ["file1.vcf.gz.tbi", "file2.vcf.gz.tbi", "file3.vcf.gz.tbi"]
+                ]},
+                { assert workflow.out.output.get(1) == [
+                    [[sample: "s4", prefix: "sample_s4.test"]], 
+                    ["file4.vcf.gz"], 
+                    ["file4.vcf.gz.tbi"]
+                ]}
+            )
+        }
+    }
+}
