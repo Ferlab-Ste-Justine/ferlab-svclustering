@@ -1,0 +1,400 @@
+/*
+These test cases have been adapted from the nf-core bcftools view module tests.
+
+These tests assume that AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables exists and point on ferlab public dataset bucket on aws.
+
+To run locally, you can execute this in the shell where the nf-test command is run. Substitute <your_profile> with the profile you want to use.
+export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id --profile <your_profile>)
+export AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key --profile <your_profile>)
+*/
+nextflow_process {
+
+    name "Test Process BCFTOOLS_VIEW_BATCH"
+    script "../main.nf"
+    process "BCFTOOLS_VIEW_BATCH"
+
+    config "./nextflow.config"
+    tag "local"
+
+    //Vanilla bcftools view command
+    test("Small1000GenomesChr22 - [vcf, tbi], [], [], []") {
+
+        when {
+            process {
+                """
+                output_meta_key = "out"
+                meta = [ id:'1234', single_end:false]
+                vcf_file = file(params.modules_testdata_base_path + 'vcf/NA07019.chr22.cnv.vcf.gz', checkIfExists: true)
+                tbi_file = file(params.modules_testdata_base_path + 'vcf/NA07019.chr22.cnv.vcf.gz.tbi', checkIfExists: true)
+
+                input[0] = [
+                    [meta], 
+                    [vcf_file],
+                    [tbi_file]
+                ]
+                input[1] = output_meta_key
+                input[2] = []
+                input[3] = []
+                input[4] = []
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.tbi.size() == 0},
+                { assert process.out.csi.size() == 0},
+                { assert snapshot(
+                    process.out.vcf,
+                    process.out.versions
+                ).match()
+                }
+            )
+        }
+    }
+
+    //bcftools view with compressed output and index
+    test("Small1000GenomesChr22 - [vcf, tbi], [], [], []  - vcf_gz_index") {
+
+        config "./vcf_gz_index.config"
+
+        when {
+            process {
+                """
+                output_meta_key = "out"
+                meta = [ id:'1234', single_end:false]
+                vcf_file = file(params.modules_testdata_base_path + 'vcf/NA07019.chr22.cnv.vcf.gz', checkIfExists: true)
+                tbi_file = file(params.modules_testdata_base_path + 'vcf/NA07019.chr22.cnv.vcf.gz.tbi', checkIfExists: true)
+
+                input[0] = [
+                    [meta],
+                    [vcf_file],
+                    [tbi_file]
+                ]
+                input[1] = output_meta_key
+                input[2] = []
+                input[3] = []
+                input[4] = []
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(
+                    process.out.vcf,
+                    process.out.csi.collect { meta_list, csi_file -> 
+                        [meta_list, file(csi_file).name]
+                    },
+                    process.out.tbi.collect { meta_list, tbi_file -> 
+                        [meta_list, file(tbi_file).name]
+                    },
+                    process.out.versions
+                ).match() },
+                { assert process.out.csi[0][1].endsWith(".csi") }
+            )
+        }
+    }
+
+    //bcftools view with compressed output and csi index
+    test("Small1000GenomesChr22 - [vcf, tbi], [], [], [] - vcf_gz_index_csi") {
+
+        config "./vcf_gz_index_csi.config"
+
+        when {
+            process {
+                """
+                output_meta_key = "out"
+                meta = [ id:'1234', single_end:false]
+                vcf_file = file(params.modules_testdata_base_path + 'vcf/NA07019.chr22.cnv.vcf.gz', checkIfExists: true)
+                tbi_file = file(params.modules_testdata_base_path + 'vcf/NA07019.chr22.cnv.vcf.gz.tbi', checkIfExists: true)
+
+                input[0] = [
+                    [meta],
+                    [vcf_file],
+                    [tbi_file]
+                ]
+                input[1] = output_meta_key
+                input[2] = []
+                input[3] = []
+                input[4] = []
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(
+                    process.out.vcf,
+                    process.out.csi.collect { meta_list, csi_file -> 
+                        [meta_list, file(csi_file).name]
+                    },
+                    process.out.tbi.collect { meta_list, tbi_file -> 
+                        [meta_list, file(tbi_file).name]
+                    },
+                    process.out.versions
+                ).match() },
+                { assert process.out.csi[0][1].endsWith(".csi") }
+            )
+        }
+    }
+
+    //bcftools view with compressed output and tbi index
+    test("Small1000GenomesChr22 - [vcf, tbi], [], [], [] - vcf_gz_index_tbi") {
+
+        config "./vcf_gz_index_tbi.config"
+
+        when {
+            process {
+                """
+                output_meta_key = "out"
+                meta = [ id:'1234', single_end:false]
+                vcf_file = file(params.modules_testdata_base_path + 'vcf/NA07019.chr22.cnv.vcf.gz', checkIfExists: true)
+                tbi_file = file(params.modules_testdata_base_path + 'vcf/NA07019.chr22.cnv.vcf.gz.tbi', checkIfExists: true)
+
+                input[0] = [
+                    [meta],
+                    [vcf_file],
+                    [tbi_file]
+                ]
+                input[1] = output_meta_key
+                input[2] = []
+                input[3] = []
+                input[4] = []
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(
+                    process.out.vcf,
+                    process.out.csi.collect { meta_list, csi_file -> 
+                        [meta_list, file(csi_file).name]
+                    },
+                    process.out.tbi.collect { meta_list, tbi_file -> 
+                        [meta_list, file(tbi_file).name]
+                    },
+                    process.out.versions
+                ).match() },
+                { assert process.out.tbi[0][1].endsWith(".tbi") }
+            )
+        }
+
+    }
+
+    
+    //bcftools view with region and target files
+    test("Small1000GenomesChr22 - [vcf, tbi], tsv, tsv, []") {
+
+        when {
+            process {
+                """
+                output_meta_key = "out"
+                meta = [ id:'1234', single_end:false]
+                vcf_file = file(params.modules_testdata_base_path + 'vcf/NA07019.chr22.cnv.vcf.gz', checkIfExists: true)
+                tbi_file = file(params.modules_testdata_base_path + 'vcf/NA07019.chr22.cnv.vcf.gz.tbi', checkIfExists: true)
+
+                region_file = file("$moduleTestDir/test_region.tsv", checkIfExists: true)
+                target_file = file("$moduleTestDir/test_target.tsv", checkIfExists: true)
+
+                input[0] = [
+                    [meta],
+                    [vcf_file],
+                    [tbi_file]
+                ]
+                input[1] = output_meta_key
+                input[2] = region_file
+                input[3] = target_file
+                input[4] = []
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(
+                    process.out.vcf,
+                    process.out.versions
+                ).match() }
+            )
+        }
+
+    }
+
+    // stub mode
+    test("Small1000GenomesChr22 - [vcf, tbi], [], [], [] - stub") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+                output_meta_key = "out"
+                meta = [ id:'1234', single_end:false]
+                vcf_file = file(params.modules_testdata_base_path + 'vcf/NA07019.chr22.cnv.vcf.gz', checkIfExists: true)
+                tbi_file = file(params.modules_testdata_base_path + 'vcf/NA07019.chr22.cnv.vcf.gz.tbi', checkIfExists: true)
+
+                input[0] = [
+                    [meta],
+                    [vcf_file],
+                    [tbi_file]
+                ]
+                input[1] = output_meta_key
+                input[2] = []
+                input[3] = []
+                input[4] = []
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(
+                    file(process.out.vcf[0][1]).name,
+                    process.out.versions
+                ).match() }
+            )
+        }
+
+    }
+
+    // stub mode, with compressed output and index
+    test("Small1000GenomesChr22 - [vcf, tbi], [], [], [] - vcf_gz_index - stub") {
+
+        config "./vcf_gz_index.config"
+        options "-stub"
+
+        when {
+            process {
+                """
+                output_meta_key = "out"
+                meta = [ id:'1234', single_end:false]
+                vcf_file = file(params.modules_testdata_base_path + 'vcf/NA07019.chr22.cnv.vcf.gz', checkIfExists: true)
+                tbi_file = file(params.modules_testdata_base_path + 'vcf/NA07019.chr22.cnv.vcf.gz.tbi', checkIfExists: true)
+
+                input[0] = [
+                    [meta],
+                    [vcf_file],
+                    [tbi_file]
+                ]
+                input[1] = output_meta_key
+                input[2] = []
+                input[3] = []
+                input[4] = []
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(
+                    process.out.vcf[0][0],
+                    file(process.out.vcf[0][1]).name,
+                    file(process.out.csi[0][1]).name,
+                    process.out.versions
+                ).match() },
+                { assert process.out.tbi.size() == 0},
+                { assert process.out.csi.size() == 1},
+                { assert process.out.csi[0][1].endsWith(".csi") }
+            )
+        }
+
+    }
+
+    //  stub mode, with compressed output and csi index
+    test("Small1000GenomesChr22 - [vcf, tbi], [], [], [] - vcf_gz_index_csi - stub") {
+
+        config "./vcf_gz_index_csi.config"
+        options "-stub"
+
+        when {
+            process {
+                """
+                output_meta_key = "out"
+                meta = [ id:'1234', single_end:false]
+                vcf_file = file(params.modules_testdata_base_path + 'vcf/NA07019.chr22.cnv.vcf.gz', checkIfExists: true)
+                tbi_file = file(params.modules_testdata_base_path + 'vcf/NA07019.chr22.cnv.vcf.gz.tbi', checkIfExists: true)
+
+                input[0] = [
+                    [ meta ],
+                    [ vcf_file ],
+                    [ tbi_file ]
+                ]
+                input[1] = output_meta_key
+                input[2] = []
+                input[3] = []
+                input[4] = []
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(
+                    process.out.vcf[0][0],
+                    file(process.out.vcf[0][1]).name,
+                    file(process.out.csi[0][1]).name,
+                    process.out.versions
+                ).match() },
+                { assert process.out.tbi.size() == 0},
+                { assert process.out.csi.size() == 1},
+                { assert process.out.csi[0][1].endsWith(".csi") }
+            )
+        }
+
+    }
+
+    // stub mode, with compressed output and tbi index
+    test("Small1000GenomesChr22 - [vcf, tbi], [], [], [] - vcf_gz_index_tbi - stub") {
+
+        config "./vcf_gz_index_tbi.config"
+        options "-stub"
+
+        when {
+            process {
+                """
+                output_meta_key = "out"
+                meta = [ id:'1234', single_end:false]
+                vcf_file = file(params.modules_testdata_base_path + 'vcf/NA07019.chr22.cnv.vcf.gz', checkIfExists: true)
+                tbi_file = file(params.modules_testdata_base_path + 'vcf/NA07019.chr22.cnv.vcf.gz.tbi', checkIfExists: true)
+
+                input[0] = [
+                    [meta],
+                    [vcf_file],
+                    [tbi_file]
+                ]
+                input[1] = output_meta_key
+                input[2] = []
+                input[3] = []
+                input[4] = []
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(
+                    process.out.vcf[0][0],
+                    file(process.out.vcf[0][1]).name,
+                    file(process.out.tbi[0][1]).name,
+                    process.out.versions
+                ).match() },
+                { assert process.out.tbi.size() == 1},
+                { assert process.out.csi.size() == 0},
+                { assert process.out.tbi[0][1].endsWith(".tbi") }
+            )
+        }
+
+    }
+
+}

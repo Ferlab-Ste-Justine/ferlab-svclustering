@@ -1,0 +1,32 @@
+nextflow_workflow {
+
+    name "Test Workflow UTILS_NFCORE_SVCLUSTERING_PIPELINE GROUP_TUPLES_BY_SIZE"
+    script "subworkflows/local/utils_nfcore_svclustering_pipeline/main.nf"
+
+    workflow "GROUP_TUPLES_BY_SIZE"
+    tag 'local'
+ 
+    test("Should group tuples base on expected size") {
+
+        when {
+
+            workflow {
+                """
+                expected_size = 3
+                input[0] = Channel.of([1, "a", "A"], [2, "b", "B"], [3, "c", "C"], [4, "d", "D"])
+                input[1] = expected_size
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert workflow.out.output.size() == 2},
+                { assert workflow.out.output.get(0) == [[1, 2, 3], ["a", "b", "c"], ["A", "B", "C"]] },
+                { assert workflow.out.output.get(1) == [[4], ["d"], ["D"]]}
+
+            )
+        }
+    }
+}

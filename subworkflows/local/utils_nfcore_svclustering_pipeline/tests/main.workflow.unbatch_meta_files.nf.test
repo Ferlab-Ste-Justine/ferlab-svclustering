@@ -1,0 +1,118 @@
+nextflow_workflow {
+
+    name "Test Workflow UTILS_NFCORE_SVCLUSTERING_PIPELINE UNBATCH_META_FILES"
+    script "subworkflows/local/utils_nfcore_svclustering_pipeline/main.nf"
+
+    workflow "UNBATCH_META_FILES"
+    tag 'local'
+ 
+    test("Extract individual meta files tuples AND remove output key in meta") {
+
+        when {
+
+            workflow {
+                """
+                meta1 = [sample: "s1", outputs: ["foo/s1.vcf.gz", "foo/s1.vcf.gz.tbi"]]
+                meta2 = [sample: "s2", outputs: ["foo/s2.vcf.gz", "foo/s2.vcf.gz.tbi"]]
+                meta3 = [sample: "s3", outputs: ["foo/s3.vcf.gz", "foo/s3.vcf.gz.tbi"]]
+                meta4 = [sample: "s4", outputs: ["foo/s4.vcf.gz", "foo/s4.vcf.gz.tbi"]]
+                files_batch1 = [
+                    file("/bar/foo/s1.vcf.gz"), 
+                    file("/bar/foo/s2.vcf.gz")
+                ]
+                files_batch2 = [
+                    file("/bar/foo/s3.vcf.gz"), 
+                    file("/bar/foo/s4.vcf.gz"), 
+                    file("/bar/foo/s3.vcf.gz.tbi"), 
+                    file("/bar/foo/s4.vcf.gz.tbi")
+                ]
+                meta_batch1 = [meta1, meta2]
+                meta_batch2 = [meta3, meta4]
+                remove_meta_key = true
+
+                input[0] = Channel.of([meta_batch1, files_batch1], [meta_batch2, files_batch2])
+                input[1] = "outputs"
+                input[2] = remove_meta_key
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert workflow.out.output.size() == 4},
+                { assert workflow.out.output.get(0) == [[sample: "s1"], ["/bar/foo/s1.vcf.gz"]] },
+                { assert workflow.out.output.get(1) == [[sample: "s2"], ["/bar/foo/s2.vcf.gz"]] },
+                { assert workflow.out.output.get(2) == [[sample: "s3"], ["/bar/foo/s3.vcf.gz", "/bar/foo/s3.vcf.gz.tbi"]] },
+                { assert workflow.out.output.get(3) == [[sample: "s4"], ["/bar/foo/s4.vcf.gz", "/bar/foo/s4.vcf.gz.tbi"]] }
+            )
+        }
+    }
+
+    test("Extract individual meta files tuples AND keep output key in meta") {
+
+        when {
+
+            workflow {
+                """
+                meta1 = [sample: "s1", outputs: ["foo/s1.vcf.gz"]]
+                meta2 = [sample: "s2", outputs: ["foo/s2.vcf.gz"]]
+                files = [
+                    file("/bar/foo/s1.vcf.gz"), 
+                    file("/bar/foo/s2.vcf.gz")
+                ]
+                remove_meta_key = false
+
+                input[0] = Channel.of([[meta1, meta2], files])
+                input[1] = "outputs"
+                input[2] = remove_meta_key
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert workflow.out.output.size() == 2},
+                { assert workflow.out.output.get(0) == [[sample: "s1",  outputs: ["foo/s1.vcf.gz"]], ["/bar/foo/s1.vcf.gz"]] },
+                { assert workflow.out.output.get(1) == [[sample: "s2",  outputs: ["foo/s2.vcf.gz"]], ["/bar/foo/s2.vcf.gz"]] },
+          )
+        }
+    }
+
+    test("Extract individual meta files WITH files given as a single file object"){
+        when {
+
+            workflow {
+                """
+                meta1 = [sample: "s1", outputs: ["foo/s1.vcf.gz", "foo/s1.vcf.gz.tbi"]]
+                meta2 = [sample: "s2", outputs: ["foo/s2.vcf.gz", "foo/s2.vcf.gz.tbi"]]
+                meta3 = [sample: "s3", outputs: ["foo/s3.vcf.gz", "foo/s3.vcf.gz.tbi"]]
+                files_batch1 = [
+                    file("/bar/foo/s1.vcf.gz"), 
+                    file("/bar/foo/s2.vcf.gz")
+                ]
+                file_batch2 = file("/bar/foo/s3.vcf.gz")
+                meta_batch1 = [meta1, meta2]
+                meta_batch2 = [meta3]
+                remove_meta_key = true
+
+                input[0] = Channel.of([meta_batch1, files_batch1], [meta_batch2, file_batch2])
+                input[1] = "outputs"
+                input[2] = remove_meta_key
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert workflow.out.output.size() == 3},
+                { assert workflow.out.output.get(0) == [[sample: "s1"], ["/bar/foo/s1.vcf.gz"]] },
+                { assert workflow.out.output.get(1) == [[sample: "s2"], ["/bar/foo/s2.vcf.gz"]] },
+                { assert workflow.out.output.get(2) == [[sample: "s3"], ["/bar/foo/s3.vcf.gz"]] },
+            )
+        }
+
+    }
+}

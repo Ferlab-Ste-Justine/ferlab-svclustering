@@ -1,0 +1,150 @@
+/*
+We drew significant inspiration from the nf-core bcftools/view module when writing this module.
+The tests in main.nf.test are adaptations of those in the nf-core bcftools/view module. 
+This file contains additional test cases specific to the bcftools view_batch module.
+
+These tests assume that AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables exists and point on ferlab public dataset bucket on aws.
+To run locally, you can execute this in the shell where the nf-test command is run. Substitute <your_profile> with the profile you want to use.
+export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id --profile <your_profile>)
+export AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key --profile <your_profile>)
+*/
+
+nextflow_process {
+
+    name "Test Process BCFTOOLS_VIEW_BATCH - extra ferlab tests"
+    script "../main.nf"
+    process "BCFTOOLS_VIEW_BATCH"
+
+    config "./nextflow.config"
+    tag "local"
+
+    test("Small1000GenomesChr22 - vanilla multi-samples case") {
+
+        when {
+            process {
+                """
+                output_meta_key = "out"
+                meta1 = [ id:'sample1']
+                vcf_file1 = file(params.modules_testdata_base_path + 'vcf/NA07019.chr22.cnv.vcf.gz', checkIfExists: true)
+                tbi_file1 = file(params.modules_testdata_base_path + 'vcf/NA07019.chr22.cnv.vcf.gz.tbi', checkIfExists: true)
+                meta2 = [ id:'sample2', single_end:false]
+                vcf_file2 = file(params.modules_testdata_base_path + 'vcf/NA07022.chr22.cnv.vcf.gz', checkIfExists: true)
+                tbi_file2 = file(params.modules_testdata_base_path + 'vcf/NA07022.chr22.cnv.vcf.gz.tbi', checkIfExists: true)
+                
+                input[0] = [
+                    [meta1, meta2], 
+                    [vcf_file1, vcf_file2],
+                    [tbi_file1, tbi_file2]
+                ]
+                input[1] = output_meta_key
+                input[2] = []
+                input[3] = []
+                input[4] = []
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.vcf.size() == 1},
+                { assert process.out.tbi.size() == 0},
+                { assert process.out.csi.size() == 0},
+                { assert snapshot(
+                    process.out.vcf,
+                    process.out.versions
+                ).match()
+                }
+            )
+        }
+    }
+
+    test("Small1000GenomesChr22 - multi-samples case - with tbi") {
+        config "./vcf_gz_index_tbi.config"
+
+        when {
+            process {
+                """
+                output_meta_key = "out"
+                meta1 = [ id:'sample1']
+                vcf_file1 = file(params.modules_testdata_base_path + 'vcf/NA07019.chr22.cnv.vcf.gz', checkIfExists: true)
+                tbi_file1 = file(params.modules_testdata_base_path + 'vcf/NA07019.chr22.cnv.vcf.gz.tbi', checkIfExists: true)
+                meta2 = [ id:'sample2', single_end:false]
+                vcf_file2 = file(params.modules_testdata_base_path + 'vcf/NA07022.chr22.cnv.vcf.gz', checkIfExists: true)
+                tbi_file2 = file(params.modules_testdata_base_path + 'vcf/NA07022.chr22.cnv.vcf.gz.tbi', checkIfExists: true)
+                
+                input[0] = [
+                    [meta1, meta2], 
+                    [vcf_file1, vcf_file2],
+                    [tbi_file1, tbi_file2]
+                ]
+                input[1] = output_meta_key
+                input[2] = []
+                input[3] = []
+                input[4] = []
+                """
+            }
+        }
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.vcf.size() == 1},
+                { assert process.out.tbi.size() == 1},
+                { assert process.out.csi.size() == 0},
+                { assert snapshot(
+                    process.out.vcf,
+                    process.out.tbi.collect { meta_list, tbi_files ->
+                        def tbi_file_names = tbi_files.collect{ file(it).name }
+                        [meta_list, tbi_file_names]
+                    },
+                    process.out.versions
+                ).match()
+                }
+            )
+        }
+    }
+
+    test("Small1000GenomesChr22 - stub multi-samples case") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+                output_meta_key = "out"
+                meta1 = [ id:'sample1']
+                vcf_file1 = file(params.modules_testdata_base_path + 'vcf/NA07019.chr22.cnv.vcf.gz', checkIfExists: true)
+                tbi_file1 = file(params.modules_testdata_base_path + 'vcf/NA07019.chr22.cnv.vcf.gz.tbi', checkIfExists: true)
+                meta2 = [ id:'sample2', single_end:false]
+                vcf_file2 = file(params.modules_testdata_base_path + 'vcf/NA07022.chr22.cnv.vcf.gz', checkIfExists: true)
+                tbi_file2 = file(params.modules_testdata_base_path + 'vcf/NA07022.chr22.cnv.vcf.gz.tbi', checkIfExists: true)
+                
+                input[0] = [
+                    [meta1, meta2], 
+                    [vcf_file1, vcf_file2],
+                    [tbi_file1, tbi_file2]
+                ]
+                input[1] = output_meta_key
+                input[2] = []
+                input[3] = []
+                input[4] = []
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out.vcf.size() == 1},
+                { assert process.out.tbi.size() == 0},
+                { assert process.out.csi.size() == 0},
+                { assert snapshot(
+                    process.out.vcf[0][1].collect{file(it).name},
+                    process.out.versions
+                ).match() }
+            )
+        }
+    }
+
+
+}

@@ -1,0 +1,115 @@
+{
+    "Small1000GenomesChr22 - multi-samples case - with tbi": {
+        "content": [
+            [
+                [
+                    [
+                        {
+                            "id": "sample1",
+                            "out": [
+                                "viewed.sample1.vcf.gz",
+                                "viewed.sample1.vcf.gz.tbi"
+                            ]
+                        },
+                        {
+                            "id": "sample2",
+                            "single_end": false,
+                            "out": [
+                                "viewed.sample2.vcf.gz",
+                                "viewed.sample2.vcf.gz.tbi"
+                            ]
+                        }
+                    ],
+                    [
+                        "viewed.sample1.vcf.gz:md5,877b3c088c9204e7da84ac4341eb07dc",
+                        "viewed.sample2.vcf.gz:md5,be538dbe52771836b1f372c95c7b59c5"
+                    ]
+                ]
+            ],
+            [
+                [
+                    [
+                        {
+                            "id": "sample1",
+                            "out": [
+                                "viewed.sample1.vcf.gz",
+                                "viewed.sample1.vcf.gz.tbi"
+                            ]
+                        },
+                        {
+                            "id": "sample2",
+                            "single_end": false,
+                            "out": [
+                                "viewed.sample2.vcf.gz",
+                                "viewed.sample2.vcf.gz.tbi"
+                            ]
+                        }
+                    ],
+                    [
+                        "viewed.sample1.vcf.gz.tbi",
+                        "viewed.sample2.vcf.gz.tbi"
+                    ]
+                ]
+            ],
+            [
+                "versions.yml:md5,9ba3c44df1981edfd1b5e00f547af344"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "23.10.1"
+        },
+        "timestamp": "2025-03-04T01:09:36.014287"
+    },
+    "Small1000GenomesChr22 - vanilla multi-samples case": {
+        "content": [
+            [
+                [
+                    [
+                        {
+                            "id": "sample1",
+                            "out": [
+                                "viewed.sample1.vcf"
+                            ]
+                        },
+                        {
+                            "id": "sample2",
+                            "single_end": false,
+                            "out": [
+                                "viewed.sample2.vcf"
+                            ]
+                        }
+                    ],
+                    [
+                        "viewed.sample1.vcf:md5,877b3c088c9204e7da84ac4341eb07dc",
+                        "viewed.sample2.vcf:md5,be538dbe52771836b1f372c95c7b59c5"
+                    ]
+                ]
+            ],
+            [
+                "versions.yml:md5,9ba3c44df1981edfd1b5e00f547af344"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "23.10.1"
+        },
+        "timestamp": "2025-03-04T01:02:08.352749"
+    },
+    "Small1000GenomesChr22 - stub multi-samples case": {
+        "content": [
+            [
+                "viewed.sample1.vcf",
+                "viewed.sample2.vcf"
+            ],
+            [
+                "versions.yml:md5,9ba3c44df1981edfd1b5e00f547af344"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "23.10.1"
+        },
+        "timestamp": "2025-03-04T01:14:58.290813"
+    }
+}

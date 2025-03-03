@@ -111,3 +111,70 @@ workflow PIPELINE_COMPLETION {
     FUNCTIONS
 ========================================================================================
 */
+
+/**
+* Group tuples based on expected size
+*
+* Behaves similarly to `groupTuple` operator, but instead of grouping by a key, groups based on an expected size
+*
+* Transforms a sequence of tuples like (K, V, W, ..) into a sequence of tuples like (list(K), list(V), list(W), ..).
+* If there is a remainder, the last tuple will have a smaller list size.
+*
+* Typically used as preprocessing for local processes executed in batch mode.
+*
+* Example: 
+*   input_ch: Channel.of( [1, 'A'], [2, 'B'], [3, 'C'], [4, 'D'])
+*   size: 3
+*
+*   emitted output: 
+*      [[1,2,3], ['A','B','C']]
+*      [[4], ['D']]
+**/
+workflow GROUP_TUPLES_BY_SIZE {
+    take: 
+        input_ch // Channel: Input channel of tuples
+        size     // Integer: Expected size of each tuple group
+    main:
+        def output_ch = input_ch
+            .collate(size)
+            .map {tuple_list -> tuple_list.transpose()}
+    emit:
+        output = output_ch
+}
+
+/**
+* Transform batch tuples of the form (meta_list, files) into individual (meta, files) tuples
+*
+* Local processes meant to be run in batch mode emit tuples of the form `(meta_list, files)`,
+* where `meta_list` is a list of `meta` dictionaries used to propagate metadata in the workflow.
+* This function converts back these batch tuples to standard `(meta, files)` tuples for use in 
+* subsequent workflow steps.
+*
+* Assumes each `meta` dictionary contains a key specifying applicable output file names
+* (`output_key` argument). For each `meta`, only the files whose name matches an applicable 
+# output file name stored in the meta dictionary will be retained.
+* 
+* If `remove_output_key` is `true` (default), the key containing the applicable output file names
+* will be removed from the meta dictionary.
+*/
+workflow UNBATCH_META_FILES {
+    take: 
+        input_ch
+        meta_key
+        remove_meta_key
+    main:
+        def output_ch = input_ch
+            .flatMap{ meta_list, files -> 
+                def file_list = files instanceof List ? files : [files]
+                meta_list.collect{ meta -> [meta, file_list]}}
+            .map { meta, files ->
+                def updated_meta = remove_meta_key?  meta.findAll{it -> it.key != meta_key}: meta
+                def applicable_file_suffixes = meta[meta_key]
+                def filtered_files = files.findAll{ candidate -> 
+                    applicable_file_suffixes.find{ suffix -> candidate.toString().endsWith(suffix)}
+                }
+                [updated_meta, filtered_files]
+            }
+    emit:
+        output = output_ch
+}
