@@ -28,6 +28,11 @@
           "format": "directory-path",
           "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
           "fa_icon": "fas fa-folder-open"
+        },
+        "publish_all": {
+          "type": "boolean",
+          "description": "Publish results from all processes to the output directory.",
+          "help_text": "If true (default false), publish results from all processes to the output directory. This is useful for debugging and testing, but can create a lot of output files."
         }
       }
     },

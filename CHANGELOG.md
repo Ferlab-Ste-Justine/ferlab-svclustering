@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### `Changed`
+
+- [#4](https://github.com/Ferlab-Ste-Justine/ferlab-svclustering/pull/4) avoid publishing intermediate outputs by default.
 
 ## [v1.2] - 2024-12-17
 
