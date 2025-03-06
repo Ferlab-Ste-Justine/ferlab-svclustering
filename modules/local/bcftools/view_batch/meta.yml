@@ -1,0 +1,109 @@
+name: bcftools_view_batch
+description: View, subset and filter VCF or BCF files by position and filtering expression, supporting both batch and non-batch modes.
+  Convert between VCF and BCF formats.
+keywords:
+  - variant calling
+  - view
+  - bcftools
+  - VCF
+tools:
+  - view:
+      description: |
+        View, subset and filter a batch of VCF or BCF files by position and filtering expression. Convert between VCF and BCF
+      homepage: http://samtools.github.io/bcftools/bcftools.html
+      documentation: http://www.htslib.org/doc/bcftools.html
+      doi: 10.1093/bioinformatics/btp352
+      licence: ["MIT"]
+      identifier: biotools:bcftools
+input:
+  - - meta:
+        type: list
+        description: |
+          List of groovy Maps, each containing sample metadata, or a single Groovy map.
+          The presence of a specific `prefix` key is expected in each map, to be used as the prefix for output files associated with the sample.
+          e.g. [[ id:'sample1', prefix:'sample1' ], [id: 'sample2', prefix:'sample2']]
+          or
+          e.g. [ id:'sample1', prefix: 'sample1' ]
+    - vcf:
+        type: file
+        description: |
+          The list of vcf files to be inspected or a single vcf file.
+          Each sample should have one corresponding VCF file, and the order of the VCF files should match the order of the samples in the meta list
+          e.g. ['sample1.vcf.gz', 'sample2.vcf.gz']
+          or
+          e.g. 'sample1.vcf.gz'
+    - index:
+        type: file
+        description: |
+          The list of index files matching the VCF files to be inspected.
+          e.g. ['sample1.vcf.gz.tbi', 'sample2.vcf.gz.tbi']
+  - - regions:
+        type: file
+        description: |
+          Optionally, restrict the operation to regions listed in this file.
+          e.g. 'file.vcf'
+  - - targets:
+        type: file
+        description: |
+          Optionally, restrict the operation to regions listed in this file (doesn't rely upon index files)
+          e.g. 'file.vcf'
+  - - samples:
+        type: file
+        description: |
+          Optional, file of sample names to be included or excluded.
+          e.g. 'file.tsv'
+output:
+  - vcf:
+      - meta:
+          type: list
+          description: |
+            List of Groovy Map, each containing information for a specific sample.
+            The output files applicable to each sample are stored in the key specified
+            by 'meta_output_key' passed as input.
+            e.g. [
+              [ id:'sample1', single_end:false, output:['sample1.viewed.vcf.gz', 'sample1.viewed.vcf.gz.tbi']],
+              [ id:'sample2', single_end:true,  output:['sample2.viewed.vcf.gz', 'sample2.viewed.vcf.gz.tbi']]
+            ]
+      - "*.{vcf,vcf.gz,bcf,bcf.gz}":
+          type: file
+          description: VCF normalized output files corresponding to the different samples
+          pattern: "*.{vcf,vcf.gz,bcf,bcf.gz}"
+  - tbi:
+      - meta:
+          type: list
+          description: |
+            List of Groovy Map, each containing information for a specific sample.
+            The output files applicable to each sample are stored in the  key specified
+            by 'meta_output_key' passed as input.
+            e.g. [
+              [ id:'sample1', single_end:false, output:['sample1.viewed.vcf.gz', 'sample1.viewed.vcf.gz.tbi']],
+              [ id:'sample2', single_end:true,  output:['sample2.viewed.vcf.gz', 'sample2.viewed.vcf.gz.tbi']]
+            ]
+      - "*.tbi":
+          type: file
+          description: VCF files indexes (tbi format) corresponding to the different samples
+          pattern: "*.tbi"
+  - csi:
+      - meta:
+          type: list
+          description: |
+            List of Groovy Map, each containing information for a specific sample.
+            The output files applicable to each sample are stored in the  key specified
+            by 'meta_output_key' passed as input.
+            e.g. [
+              [ id:'sample1', single_end:false, output:['sample1.viewed.vcf.gz', 'sample1.viewed.vcf.gz.csi']],
+              [ id:'sample2', single_end:true,  output:['sample2.viewed.vcf.gz', 'sample2.viewed.vcf.gz.csi']]
+            ]
+      - "*.csi":
+          type: file
+          description: VCF file indexes (csi format) corresponding to the different samples
+          pattern: "*.csi"
+  - versions:
+      - versions.yml:
+          type: file
+          description: File containing software versions
+          pattern: "versions.yml"
+authors:
+  - "@abhi18av"
+maintainers:
+  - "@abhi18av"

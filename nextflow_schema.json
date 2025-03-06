@@ -240,7 +240,12 @@
       "type": "boolean",
       "default": true,
       "description": "If enabled, build conda env if -profile conda is passed"
+    },
+    "filter_batch_size": {
+      "type": "integer",
+      "default": 10,
+      "description": "Number of files handled by each filter process execution"
     }
   },
-  "required": ["fasta", "fasta_fai", "fasta_dict"]
+  "required": ["fasta", "fasta_fai", "fasta_dict", "filter_batch_size"]
 }
