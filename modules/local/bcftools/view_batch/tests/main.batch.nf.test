@@ -139,4 +139,32 @@ nextflow_process {
             )
         }
     }
+
+    test("Small1000GenomesChr22 - with bcftools error for one file") {
+        when {
+            process {
+                """
+                meta1 = [id: "s1", prefix: 'sample_s1.test']
+                invalid_vcf_file = file(params.modules_testdata_base_path + 'vcf/NA07019.chr22.cnv.vcf.gz.tbi', checkIfExists: true)
+                meta2 = [id: "s2", prefix: 'sample_s2.test']
+                vcf_file2 = file(params.modules_testdata_base_path + 'vcf/NA07022.chr22.cnv.vcf.gz', checkIfExists: true)
+
+                input[0] = [
+                    [meta1, meta2], 
+                    [invalid_vcf_file, vcf_file2],
+                    []
+                ]
+                input[1] = []
+                input[2] = []
+                input[3] = []
+                """
+            }
+        }
+        then {
+            assertAll(
+                { assert process.failed },
+                { assert process.errorReport.contains("Failed to read from NA07019.chr22.cnv.vcf.gz.tbi: Exec format error")}
+            )
+        }
+    }
 }
