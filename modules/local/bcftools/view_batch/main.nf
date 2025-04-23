@@ -38,6 +38,7 @@ process BCFTOOLS_VIEW_BATCH {
 
     """
     #!/bin/bash
+    set -e
 
     # Initialize arrays
     input_vcfs=(${input_vcf_list.join(" ")})
@@ -77,6 +78,7 @@ process BCFTOOLS_VIEW_BATCH {
     
     """
     #!/bin/bash
+    set -e
 
     # Initialize arrays
     output_vcfs=(${output_vcf_list.join(" ")})
