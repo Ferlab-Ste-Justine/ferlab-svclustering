@@ -6,8 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### `Fixed`
+## [v1.3.1] - 2025-04-23
 
+### `Fixed`
 - [#7](https://github.com/Ferlab-Ste-Justine/ferlab-svclustering/pull/7) improve error handling in view_batch process
 
 ## [v1.3] - 2025-03-06
