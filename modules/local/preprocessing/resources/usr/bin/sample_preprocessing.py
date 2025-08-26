@@ -41,7 +41,7 @@ def process_vcf(sample_id, vcf_path):
     # Modify the VCF content
     with gzip.open(input_vcf, 'rt') if input_vcf.endswith('.gz') else open(input_vcf, 'r') as infile, open(mod_vcf, 'w') as outfile:
         for line in infile:
-            if line.startswith("##FORMAT=<ID=CN,Number=1,Type=Integer,Description=\"Estimated copy number\">"):
+            if line.startswith("##FORMAT=<ID=PE,"):
                 outfile.write(line)
                 outfile.write("##FORMAT=<ID=ECN,Number=1,Type=Integer,Description=\"Expected copy number\">\n")
                 continue

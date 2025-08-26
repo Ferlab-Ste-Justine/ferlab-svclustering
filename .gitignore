@@ -7,3 +7,6 @@ nf-params.json
 
 #Work dir
 work/*
+
+# Idea files
+.idea
