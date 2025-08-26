@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.3.2] - 2025-08-26
+
 ### `Changed`
 - [#9](https://github.com/Ferlab-Ste-Justine/ferlab-svclustering/pull/9) Check PE header instead of CN when adding ECN header
 
