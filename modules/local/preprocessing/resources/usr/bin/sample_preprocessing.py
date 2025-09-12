@@ -46,6 +46,9 @@ def process_vcf(sample_id, vcf_path):
                 outfile.write("##FORMAT=<ID=ECN,Number=1,Type=Integer,Description=\"Expected copy number\">\n")
                 continue
             elif not line.startswith("#"):
+                FILTER = line.split("\t")[6]
+                if FILTER != "PASS": # Only keep PASS variants
+                    continue
                 line = re.sub(r";END", ";ALGORITHMS=depth;END", line)
                 line = re.sub(r":PE", ":PE:ECN", line)
                 line = line.strip() + ":2\n"
