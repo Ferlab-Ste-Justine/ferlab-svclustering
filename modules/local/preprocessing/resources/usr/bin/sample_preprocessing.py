@@ -6,7 +6,7 @@ import os
 import re
 import sys
 
-VERSION = "1.0"
+VERSION = "2.0"
 
 def create_ploidy_table(samples):
     """
@@ -25,7 +25,7 @@ def create_ploidy_table(samples):
             ploidy_values = "\t".join(["2"] * len(chroms))
             f.write("{}\t{}\n".format(sample_id, ploidy_values))
 
-def process_vcf(sample_id, vcf_path):
+def process_vcf(sample_id, vcf_path, pass_only=False):
     """
     Processes the CNV VCF file for a given sample.
 
@@ -47,7 +47,7 @@ def process_vcf(sample_id, vcf_path):
                 continue
             elif not line.startswith("#"):
                 FILTER = line.split("\t")[6]
-                if FILTER != "PASS": # Only keep PASS variants
+                if (pass_only) and (FILTER != "PASS"): # Only keep PASS variants
                     continue
                 line = re.sub(r";END", ";ALGORITHMS=depth;END", line)
                 line = re.sub(r":PE", ":PE:ECN", line)
@@ -118,6 +118,7 @@ def main():
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("--sample_id", nargs="+", help="List of sample IDs")
     parser.add_argument("--path", nargs="+", help="List of VCF file paths")
+    parser.add_argument("--pass_only", type=bool, default=False, help="Only consider variants that PASS all filters (default: false)")
     parser.add_argument("-v", "--version", action="store_true", help="Show version information and exit")
     parser.add_argument("-h", "--help", action="store_true", help="Show help message and exit")
     args = parser.parse_args()
@@ -136,11 +137,14 @@ def main():
         print_help()
         return
 
+    if args.pass_only:
+        print("Info: Only keeping variants that PASS all filters.")
+    
     # Process the samples
     samples = list(zip(args.sample_id, args.path))
     create_ploidy_table(samples)
     for sample_id, vcf_path in samples:
-        process_vcf(sample_id, vcf_path)
+        process_vcf(sample_id, vcf_path, args.pass_only)
 
 if __name__ == "__main__":
     main()

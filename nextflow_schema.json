@@ -171,7 +171,7 @@
       "description": "",
       "default": "",
       "properties": {
-        "clusterin_algorithm": {
+        "clustering_algorithm": {
           "type": "string",
           "default": "SINGLE_LINKAGE",
           "description": "Type (CLUSTER_ALGORITHM)",
@@ -193,6 +193,11 @@
             "MEAN_START_MEAN_END"
           ],
           "help_text": ""
+        },
+        "include_only_pass_variants": {
+          "type": "boolean",
+          "default": true,
+          "description": "If true (default), only consider variants for which the FILTER column is set to PASS."
         }
       }
     }

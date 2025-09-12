@@ -20,10 +20,11 @@ process PREPROCESSING {
     path "versions.yml",      emit: versions 
         
     script:
+    def args = task.ext.args ?: ''
     def sample_ids = samples.join(' ')
     def vcf_paths  = vcfs.join(' ')
     """
-    sample_preprocessing.py --sample_id $sample_ids --path $vcf_paths
+    sample_preprocessing.py --sample_id $sample_ids --path $vcf_paths $args
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
