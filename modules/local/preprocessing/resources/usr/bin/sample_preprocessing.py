@@ -8,6 +8,8 @@ import sys
 
 VERSION = "1.0"
 
+FORMAT_COLUMN_IDX = 8 # 0-based index of the FORMAT column in VCF
+
 def create_ploidy_table(samples):
     """
     Creates a ploidy table with chromosome names and sample IDs.
@@ -46,9 +48,25 @@ def process_vcf(sample_id, vcf_path):
                 outfile.write("##FORMAT=<ID=ECN,Number=1,Type=Integer,Description=\"Expected copy number\">\n")
                 continue
             elif not line.startswith("#"):
+                # Insert INFO field ALGORITHMS
                 line = re.sub(r";END", ";ALGORITHMS=depth;END", line)
-                line = re.sub(r":PE", ":PE:ECN", line)
-                line = line.strip() + ":2\n"
+
+                # Insert ECN just after PE in FORMAT column
+                cols = line.strip().split('\t')
+                format_col = cols[FORMAT_COLUMN_IDX]
+                format_fields = format_col.split(':')
+                ecn_index = format_fields.index("PE") + 1
+                format_fields.insert(ecn_index, "ECN")
+                cols[FORMAT_COLUMN_IDX] = ':'.join(format_fields)
+
+                # Insert ECN metric just after PE metric in each sample column
+                # Just in case, supporting multi-sample, but our use case is single-sample VCFs
+                for i in range(FORMAT_COLUMN_IDX + 1, len(cols)):
+                    sample_values = cols[i].split(':')
+                    sample_values.insert(ecn_index, "2")
+                    cols[i] = ':'.join(sample_values)
+                
+                line = '\t'.join(cols) + '\n'
             outfile.write(line)
 
     # Extract DUP and DEL variants
