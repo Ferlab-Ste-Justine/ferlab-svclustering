@@ -24,8 +24,9 @@ process SVCLUSTERINGDUP {
     def clustering_algorithm = params.clustering_algorithm
     def overlap              = params.overlap
     def breakpoint_strategy  = params.breakpoint_strategy
+    def output_file          = "ALL.${clustering_algorithm.toUpperCase()}_RO${Math.round(overlap * 100)}.DUP.vcf.gz"
     """
-    gatk SVCluster --output ALL.MAX_CLIQUE_RO80.DUP.vcf.gz -V $dups \
+    gatk SVCluster --output $output_file -V $dups \
      --ploidy-table $ploidy --algorithm $clustering_algorithm \
      --reference $fasta --depth-interval-overlap $overlap \
      --breakpoint-summary-strategy $breakpoint_strategy \
@@ -39,6 +40,10 @@ process SVCLUSTERINGDUP {
 
     stub:
     def dups = vcfdup.join(' ')
+    def clustering_algorithm = params.clustering_algorithm
+    def overlap              = params.overlap
+    def output_file          = "ALL.${clustering_algorithm.toUpperCase()}_RO${Math.round(overlap * 100)}.DUP.vcf.gz"
+   
     """
     # Verify the presence of input files to make the stub realistic
     for input_file in $dups $fasta $ploidy; do
@@ -49,7 +54,7 @@ process SVCLUSTERINGDUP {
     done
     
     # Create an empty output file
-    touch ALL.MAX_CLIQUE_RO80.DUP.vcf.gz
+    touch ${output_file}
 
     # Create version file as the main script:
     cat <<-END_VERSIONS > versions.yml

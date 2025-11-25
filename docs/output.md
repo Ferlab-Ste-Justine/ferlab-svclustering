@@ -27,10 +27,19 @@ Below, you can see the structure of the output directory. The subfolders `filter
     - ${sample}.cnv.mod.(DEL/DUP).bed
     - ploidy_table.tsv
   - `svclusteringdup/`
-    - ALL.MAX_CLIQUE_RO80.DUP.vcf.gz : The vcf with CNV DUP cluster for all samples
+    - ALL.SINGLE_LINKAGE_RO80.DUP.vcf.gz : The vcf with CNV DUP cluster for all samples
   - `svclusteringdel/`
-    - ALL.MAX_CLIQUE_RO80.DEL.vcf.gz : The vcf with CNV DEL cluster for all samples
+    - ALL.SINGLE_LINKAGE_RO80.DEL.vcf.gz : The vcf with CNV DEL cluster for all samples
 
 </details>
 
 [Nextflow](https://www.nextflow.io/docs/latest/tracing.html) provides excellent functionality for generating various reports relevant to the running and execution of the pipeline. This will allow you to troubleshoot errors with the running of the pipeline, and also provide you with other information such as launch commands, run times and resource usage.
+
+### Output file naming
+
+The filenames for the DUP/DEL cluster files will follow this pattern: 
+"ALL.`${clustering_algorithm}`_RO`${reciprocal_overlap_in_percent}`.`${variant_type}`.vcf.gz"
+
+For example:
+- `ALL.SINGLE_LINKAGE_RO80.DEL.vcf.gz`
+- `ALL.SINGLE_LINKAGE_RO80.DUP.vcf.gz`

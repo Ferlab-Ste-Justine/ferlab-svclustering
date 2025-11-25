@@ -6,8 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.3.4] - 2025-11-25
+
+### `Changed`
+- [#12](https://github.com/Ferlab-Ste-Justine/ferlab-svclustering/pull/12) output filenames now dynamically reflect the clustering algorithm and reciprocal overlap threshold
+
 ## [v1.3.3] - 2025-11-18
-- [#11](https://github.com/Ferlab-Ste-Justine/ferlab-svclustering/pull///) Relax metric order assumptions in format column
+
+### `Changed`
+- [#11](https://github.com/Ferlab-Ste-Justine/ferlab-svclustering/pull/11) Relax metric order assumptions in format column
 
 ## [v1.3.2] - 2025-08-26
 
