@@ -25,8 +25,9 @@ process SVCLUSTERINGDEL {
     def clustering_algorithm = params.clustering_algorithm
     def overlap              = params.overlap
     def breakpoint_strategy  = params.breakpoint_strategy
+    def output_file          = "ALL.${clustering_algorithm.toUpperCase()}_RO${Math.round(overlap * 100)}.DEL.vcf.gz"
     """
-    gatk SVCluster --output ALL.MAX_CLIQUE_RO80.DEL.vcf.gz -V $dels \
+    gatk SVCluster --output $output_file -V $dels \
      --ploidy-table $ploidy --algorithm $clustering_algorithm \
      --reference $fasta --depth-interval-overlap $overlap \
      --breakpoint-summary-strategy $breakpoint_strategy \
@@ -40,6 +41,9 @@ process SVCLUSTERINGDEL {
 
     stub:
     def dels = vcfdel.join(' ')
+    def clustering_algorithm = params.clustering_algorithm
+    def overlap              = params.overlap
+    def output_file          = "ALL.${clustering_algorithm.toUpperCase()}_RO${Math.round(overlap * 100)}.DEL.vcf.gz"
     """
     # To make this stub realist, we verify that the input file exists
     for input_file in $dels $fasta $ploidy; do
@@ -50,7 +54,7 @@ process SVCLUSTERINGDEL {
     done
     
     # Create empty output file
-    touch ALL.MAX_CLIQUE_RO80.DEL.vcf.gz
+    touch ${output_file}
 
     # Create version file as the main script does
     cat <<-END_VERSIONS > versions.yml
