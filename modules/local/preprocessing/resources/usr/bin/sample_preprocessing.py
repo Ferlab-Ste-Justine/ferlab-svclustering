@@ -6,8 +6,9 @@ import os
 import re
 import sys
 
-VERSION = "1.0"
+VERSION = "1.3"
 
+INFO_COLUMN_IDX = 7   # 0-based index of the INFO column in VCF
 FORMAT_COLUMN_IDX = 8 # 0-based index of the FORMAT column in VCF
 
 def create_ploidy_table(samples):
@@ -48,11 +49,13 @@ def process_vcf(sample_id, vcf_path):
                 outfile.write("##FORMAT=<ID=ECN,Number=1,Type=Integer,Description=\"Expected copy number\">\n")
                 continue
             elif not line.startswith("#"):
+                cols = line.strip().split('\t')
+
                 # Insert INFO field ALGORITHMS
-                line = re.sub(r";END", ";ALGORITHMS=depth;END", line)
+                info_col = cols[INFO_COLUMN_IDX]
+                cols[INFO_COLUMN_IDX] = "ALGORITHMS=depth;" + info_col
 
                 # Insert ECN just after PE in FORMAT column
-                cols = line.strip().split('\t')
                 format_col = cols[FORMAT_COLUMN_IDX]
                 format_fields = format_col.split(':')
                 ecn_index = format_fields.index("PE") + 1
